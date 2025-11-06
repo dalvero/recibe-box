@@ -44,7 +44,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           gradient: gradient,
           boxShadow: [
             BoxShadow(
-              color: Colors.black12.withOpacity(0.1),
+              color: Colors.black12,
               blurRadius: 6,
               offset: const Offset(0, 3),
             ),
