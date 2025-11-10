@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_box/screens/screen_form_tambah.dart';
 import 'package:recipe_box/themes/my_themes.dart';
 import 'package:recipe_box/widgets/my_app_bar.dart';
 import 'package:recipe_box/widgets/my_floating_act_button.dart';
@@ -51,13 +52,21 @@ class _ScreenTambahResepState extends State<ScreenTambahResep> {
             ],
           ),
         )
-      ),      
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 40), // NAIK 40 PIXEL
         child: MyFloatingActButton(
           icon: Icons.add,
-          onPressed: () {},
-        ),
+          // ARAHKAN KE FORM TAMBAH RESEP
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ScreenFormTambahResep(),
+              ),                     
+            );
+          }
+        ),      
       ),
     );
   }
