@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:recipe_box/screens/screen_review_resep.dart';
 import 'package:recipe_box/themes/my_themes.dart';
 import 'package:recipe_box/models/resep_model.dart';
+import 'package:recipe_box/widgets/my_dropdown.dart';
+import 'package:recipe_box/widgets/my_textfield.dart';
 
 class ScreenFormTambahResep extends StatefulWidget {
   const ScreenFormTambahResep({super.key});
@@ -33,7 +35,7 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyThemes.greyColor,
+      backgroundColor: MyThemes.backgroundColor,
       appBar: AppBar(
         title: const Text("Masukkan Resep"),
         backgroundColor: MyThemes.primaryColor,
@@ -46,49 +48,47 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Judul
+              // JUDUL RESEP
               const Text("Judul Resep", style: TextStyle(fontWeight: FontWeight.bold)),
-              TextFormField(
+              const SizedBox(height: 8),
+              MyTextfield(
+                hintText: "Contoh: Kari Ayam",
                 controller: _judulController,
-                decoration: const InputDecoration(hintText: "Contoh: Kari Ayam"),
-                validator: (v) => v!.isEmpty ? "Judul wajib diisi" : null,
-              ),
-              const SizedBox(height: 12),
-
-              // Jenis Masakan
-              const Text("Jenis Masakan", style: TextStyle(fontWeight: FontWeight.bold)),
-              DropdownButtonFormField<String>(
-                value: _kategoriDipilih,
-                decoration: const InputDecoration(),
-                hint: const Text("Pilih jenis masakan"),
-                items: _kategoriList.map((e) {
-                  return DropdownMenuItem(value: e, child: Text(e));
-                }).toList(),
-                onChanged: (value) => setState(() => _kategoriDipilih = value),
-                validator: (v) => v == null ? "Pilih kategori" : null,
-              ),
-              const SizedBox(height: 12),
-
-              // Porsi & Waktu Masak
-              const Text("Porsi & Waktu Masak", style: TextStyle(fontWeight: FontWeight.bold)),
-              TextFormField(
-                controller: _waktuController,
-                decoration: const InputDecoration(hintText: "Contoh: 30 - 45 Menit"),
               ),
               const SizedBox(height: 8),
-              TextFormField(
+
+              // JENIS MASAKAN
+              const Text("Jenis Masakan", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              MyDropdown(
+                value: _kategoriDipilih,
+                items: _kategoriList,
+                onChanged: (value) => setState(() => _kategoriDipilih = value),
+                hintText: "Pilih jenis",                                
+              ),
+              const SizedBox(height: 12),
+
+              // PORSI & WAKTU MASAK
+              const Text("Porsi & Waktu Masak", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8,),
+              MyTextfield(
+                hintText: "Contoh: 30 Menit",
+                controller: _waktuController,                
+              ),
+              const SizedBox(height: 8),
+               MyTextfield(
+                hintText: "Contoh: 1 Porsi",
                 controller: _porsiController,
-                decoration: const InputDecoration(hintText: "Contoh: 1 Porsi"),
               ),
               const SizedBox(height: 16),
 
-              // Bahan-bahan
+              // BAHAN-BAHAN
               const Text("Bahan-bahan", style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ..._buildDynamicFields(_bahanControllers, "Tambah Bahan"),
               const SizedBox(height: 16),
 
-              // Langkah-langkah
+              // LANGKAH-LANGKAH
               const Text("Langkah-langkah", style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ..._buildDynamicFields(_langkahControllers, "Tambah Langkah-langkah"),
