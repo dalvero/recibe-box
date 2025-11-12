@@ -22,12 +22,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.titleStyle,
     this.subtitleStyle,
     this.backgroundColor = MyThemes.backgroundColor,
-    this.height = 100,
+    this.height = 10,
     this.borderRadius = 25,
     this.showBackButton = false,
     this.titleAlignment = Alignment.centerLeft,
     this.actionWidget,
-    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    this.padding = const EdgeInsets.symmetric(horizontal: 20),
     this.gradient,
   });
 

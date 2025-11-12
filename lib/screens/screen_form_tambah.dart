@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_final_fields
+
 import 'package:flutter/material.dart';
 import 'package:recipe_box/screens/screen_review_resep.dart';
 import 'package:recipe_box/themes/my_themes.dart';
 import 'package:recipe_box/models/resep_model.dart';
+import 'package:recipe_box/widgets/my_app_bar.dart';
 import 'package:recipe_box/widgets/my_dropdown.dart';
 import 'package:recipe_box/widgets/my_textfield.dart';
+import 'package:recipe_box/widgets/my_dynamic_fields.dart';
 
 class ScreenFormTambahResep extends StatefulWidget {
   const ScreenFormTambahResep({super.key});
@@ -36,10 +40,28 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyThemes.backgroundColor,
-      appBar: AppBar(
-        title: const Text("Masukkan Resep"),
+      appBar: MyAppBar(
+        title: 'Ayo Buat Resep',        
+        subtitle: 'Makananmu!',        
         backgroundColor: MyThemes.primaryColor,
-        elevation: 0,
+        height: 140,                  
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),                
+        titleStyle: TextStyle(
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+          color: MyThemes.textColor,             
+        ),
+        subtitleStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.normal,
+          color: MyThemes.backgroundColor,
+        ),
+
+        // BACK BUTTON
+        actionWidget: IconButton(
+          icon: Icon(Icons.arrow_back, color: MyThemes.textColor),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -94,7 +116,7 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
               ..._buildDynamicFields(_langkahControllers, "Tambah Langkah-langkah"),
               const SizedBox(height: 24),
 
-              // Tombol Review
+              // TOMBOL REVIEW
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -108,7 +130,11 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
                   onPressed: _onReviewPressed,
                   child: const Text(
                     "Review Resep",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold,
+                      color: MyThemes.textColor,
+                    ),
                   ),
                 ),
               ),
@@ -123,28 +149,17 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
     List<TextEditingController> controllers,
     String label,
   ) {
-    List<Widget> widgets = [];
-    for (int i = 0; i < controllers.length; i++) {
-      widgets.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: TextFormField(
-            controller: controllers[i],
-            decoration: InputDecoration(
-              prefixText: "${i + 1}. ",
-              hintText: i == 0 ? "Contoh: Ayam 1kg" : null,
-            ),
-            validator: (v) => v!.isEmpty ? "Isi data ini" : null,
-          ),
+    return [
+      for (int i = 0; i < controllers.length; i++)
+        MyDynamicField(
+          index: i,
+          controller: controllers[i],
+          hintText: i == 0 ? "Contoh: Ayam 1kg" : null,
         ),
-      );
-    }
-    widgets.add(
+      const SizedBox(height: 8),
       Center(
         child: TextButton.icon(
-          onPressed: () {
-            setState(() => controllers.add(TextEditingController()));
-          },
+          onPressed: () => setState(() => controllers.add(TextEditingController())),
           icon: const Icon(Icons.add, color: Colors.orange),
           label: Text(
             label,
@@ -152,9 +167,9 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
           ),
         ),
       ),
-    );
-    return widgets;
+    ];
   }
+
 
   void _onReviewPressed() {
     if (_formKey.currentState!.validate()) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class MyThemes {
   // WARNA UTAMA APLIKASI
-  static const Color primaryColor = Colors.orangeAccent;
-  static const Color secondaryColor = Color(0xFFFFD180);
+  static const Color primaryColor =  Color(0xFFFFC529);
+  static const Color secondaryColor = Color(0xFFFFC529);
   static const Color backgroundColor = Colors.white;
   static const Color textColor = Colors.black87;
   static const Color greyText = Color(0xFF4A4A4A);

@@ -1,5 +1,6 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_box/themes/my_themes.dart';
 
 class MyBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -14,7 +15,7 @@ class MyBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConvexAppBar(
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: MyThemes.primaryColor,
       style: TabStyle.react, // ANIMASI SMOOTH KETIKA DITEKAN
       color: Colors.white, // WARNA ICON DEFAULT
       activeColor: Colors.black, // WARNA ICON AKTIF

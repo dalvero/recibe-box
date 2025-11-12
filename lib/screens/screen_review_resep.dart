@@ -1,8 +1,11 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:recipe_box/models/resep_model.dart';
 import 'package:recipe_box/themes/my_themes.dart';
+import 'package:recipe_box/widgets/my_app_bar.dart';
 
 class ScreenReviewResep extends StatefulWidget {
   final Resep resep;
@@ -37,29 +40,21 @@ class _ScreenReviewResepState extends State<ScreenReviewResep> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyThemes.greyColor,
-      appBar: AppBar(
-        title: const Text("Resep"),
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.black),
-            onPressed: () {}, // nanti bisa tambah resep baru
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.black),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Resep dihapus (contoh aksi)")),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+      appBar: MyAppBar(
+        title: 'Resep Makananmu',        
+        backgroundColor: MyThemes.primaryColor,
+        height: 100,                  
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),                
+        titleStyle: TextStyle(
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+          color: MyThemes.textColor,             
+        ),
+        // BACK BUTTON
+        actionWidget: IconButton(
+          icon: Icon(Icons.arrow_back, color: MyThemes.textColor),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -152,6 +147,37 @@ class _ScreenReviewResepState extends State<ScreenReviewResep> {
 
               const SizedBox(height: 24),
 
+              // LANGKAH-LANGKAH
+              const Text(
+                "Langkah-langkah",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+              ),
+              const SizedBox(height: 8,),
+              ...widget.resep.langkah.map(
+                (langkah) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6, right: 8),
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        langkah,
+                        style: const TextStyle(fontSize: 14, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               // TOMBOL SAVE
               SizedBox(
                 width: double.infinity,
@@ -164,7 +190,7 @@ class _ScreenReviewResepState extends State<ScreenReviewResep> {
                     ),
                   ),
                   onPressed: () {
-                    // nanti dihubungkan ke database (insert)
+                    // NANTI DIHUBUNGKAN KE DATABASE (INSERT)
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Resep disimpan!")),
                     );
@@ -174,6 +200,7 @@ class _ScreenReviewResepState extends State<ScreenReviewResep> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: MyThemes.textColor
                     ),
                   ),
                 ),

@@ -15,18 +15,20 @@ class _ScreenFavoriteState extends State<ScreenFavorite> {
   Widget build(BuildContext context) {
     return Scaffold(  
       appBar: MyAppBar(
-        title: 'Buat resep makananmu sendiri',        
+        title: 'Buat resep makananmu',        
         subtitle: 'di rumahmu sendiri!',        
-        backgroundColor: MyThemes.greyColor,
-        height: 120,                        
+        backgroundColor: MyThemes.primaryColor,
+        height: 140,                  
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
         titleStyle: TextStyle(
-          fontSize: 18,
+          fontSize: 23,
           fontWeight: FontWeight.bold,
-          color: MyThemes.greyText,          
+          color: MyThemes.textColor,         
         ),
         subtitleStyle: TextStyle(
-          fontSize: 16,
-          color: MyThemes.primaryColor,
+          fontSize: 20,
+          fontWeight: FontWeight.normal,
+          color: MyThemes.backgroundColor,
         ),
       ),
       body: const Center(
