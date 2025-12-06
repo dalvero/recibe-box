@@ -1,45 +1,127 @@
-import 'dart:async';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
-import 'package:recipe_box/db/db_constants.dart';
 
 class DBHelper {
+  static final DBHelper instance = DBHelper._init();
   static Database? _database;
 
-  static Future<Database> get database async {
+  DBHelper._init();
+
+  Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB();
+    _database = await _initDB('recipe_box.db');
     return _database!;
   }
 
-  static Future<Database> _initDB() async {
+  Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, DBConstants.dbName);
+    final path = p.join(dbPath, filePath);
 
     return await openDatabase(
       path,
-      version: DBConstants.dbVersion,
+      version: 1,
+      onConfigure: (db) async {
+        await db.execute("PRAGMA foreign_keys = ON");
+      },
       onCreate: _createDB,
     );
   }
 
-  static Future<void> _createDB(Database db, int version) async {
+  Future _createDB(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE ${DBConstants.tableResep} (
-        ${DBConstants.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${DBConstants.colJudul} TEXT NOT NULL,
-        ${DBConstants.colKategori} TEXT NOT NULL,
-        ${DBConstants.colPorsi} INTEGER,
-        ${DBConstants.colWaktu} TEXT,
-        ${DBConstants.colImage} TEXT,
-        ${DBConstants.colBahan} TEXT,
-        ${DBConstants.colLangkah} TEXT
+      CREATE TABLE kategori (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nama_kategori TEXT NOT NULL,
+        foto_path TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE resep (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        judul TEXT NOT NULL,
+        kategori_id INTEGER NOT NULL,
+        porsi INTEGER NOT NULL,
+        waktu_masak TEXT NOT NULL,
+        image_path TEXT,
+        is_favorite INTEGER NOT NULL,
+        FOREIGN KEY(kategori_id) REFERENCES kategori(id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE resep_bahan (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        resep_id INTEGER,
+        bahan TEXT,
+        FOREIGN KEY(resep_id) REFERENCES resep(id) ON DELETE CASCADE
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE resep_langkah (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        resep_id INTEGER,
+        langkah TEXT,
+        FOREIGN KEY(resep_id) REFERENCES resep(id) ON DELETE CASCADE
       )
     ''');
   }
 
-  static Future<void> close() async {
+  Future<int> insert(String table, Map<String, dynamic> data) async {
+    final db = await instance.database;
+    return await db.insert(table, data);
+  }
+
+  Future<List<Map<String, dynamic>>> getAll(String table) async {
+    final db = await instance.database;
+    return await db.query(table);
+  }
+
+  Future<int> deleteById(String table, int id) async {
+    final db = await instance.database;
+    return await db.delete(table, where: "id = ?", whereArgs: [id]);
+  }
+
+  Future<int> deleteWhere(
+    String table, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
     final db = await database;
-    db.close();
+    return await db.delete(table, where: where, whereArgs: whereArgs);
+  }
+
+  Future<int> updateById(String table, int id, Map<String, dynamic> data) async {
+    final db = await instance.database;
+    return await db.update(table, data, where: "id = ?", whereArgs: [id]);
+  }
+
+  // UPDATE
+  Future<int> update(
+    String table,
+    Map<String, dynamic> data, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    final db = await instance.database;
+    return await db.update(table, data, where: where, whereArgs: whereArgs);
+  }
+
+  // UPDATE WHERE
+  Future<int> updateWhere(
+    String table, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    final db = await database;
+    return await db.update(table, {}, where: where, whereArgs: whereArgs);
+  }
+
+  // QUERY
+  Future<List<Map<String, dynamic>>> query(String table,
+      {String? where, List<Object?>? whereArgs}) async {
+    final db = await database;
+    return await db.query(table, where: where, whereArgs: whereArgs);
   }
 }

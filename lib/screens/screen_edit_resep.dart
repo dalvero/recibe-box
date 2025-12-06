@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_final_fields
-
 import 'package:flutter/material.dart';
 import 'package:recipe_box/models/form_resep_dto.dart';
 import 'package:recipe_box/models/kategori_model.dart';
@@ -11,16 +9,29 @@ import 'package:recipe_box/widgets/my_dropdown.dart';
 import 'package:recipe_box/widgets/my_textfield.dart';
 import 'package:recipe_box/widgets/my_dynamic_fields.dart';
 
-class ScreenFormTambahResep extends StatefulWidget {
-  const ScreenFormTambahResep({super.key});
+class ScreenEditResep extends StatefulWidget {
+  final FormResepDTO resep;
+  const ScreenEditResep({super.key, required this.resep});
 
   @override
-  State<ScreenFormTambahResep> createState() => _ScreenFormTambahResepState();
+  State<ScreenEditResep> createState() => _ScreenEditResepState();
 }
 
-class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
+class _ScreenEditResepState extends State<ScreenEditResep> {
   final _formKey = GlobalKey<FormState>();
   final _kategoriRepo = KategoriRepository();
+
+  // MENGAMBIL DATA RESEP YANG AKAN DIEDIT
+  int? resepId;
+  String? judulResep;
+  String? jenisMasakan;
+  String? porsi;
+  String? waktuMasak;
+  String? imagePath;
+
+  // LIST UNTUK MENAMPUNG BAHAN DAN LANGKAH
+  List<String> bahanList = [];
+  List<String> langkahList = [];
 
   // CONTROLLER FORM FIELD
   final TextEditingController _judulController = TextEditingController();
@@ -30,13 +41,41 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
   List<KategoriResep> _kategoriList = []; // SIMPAN LIST OBJEK KATEGORI
   KategoriResep? _kategoriDipilih; // SIMPAN OBJEK YANG DIPILIH
 
-  List<TextEditingController> _bahanControllers = [TextEditingController()];
-  List<TextEditingController> _langkahControllers = [TextEditingController()];
+  final List<TextEditingController> _bahanControllers = [];
+  final List<TextEditingController> _langkahControllers = [];
 
   @override
   void initState() {
     super.initState();
     _loadKategori();
+
+    // INISIALISASI DATA RESEP YANG AKAN DIEDIT
+    resepId = widget.resep.id;
+    judulResep = widget.resep.judul;
+    jenisMasakan = widget.resep.kategoriNama;
+    porsi = widget.resep.porsi.toString();
+    waktuMasak = widget.resep.waktuMasak;
+    imagePath = widget.resep.imagePath;
+    
+    // MEMASUKAN BAHAN DAN LANGKAH KE LIST
+    for(var bahan in widget.resep.bahan){
+      bahanList.add(bahan);
+      _bahanControllers.add(TextEditingController(text: bahan));
+    }
+
+    for(var langkah in widget.resep.langkah){
+      langkahList.add(langkah);
+      _langkahControllers.add(TextEditingController(text: langkah));
+    }
+
+    // SET DATA KE CONTROLLER
+    _judulController.text = judulResep ?? "";
+    _porsiController.text = porsi ?? "";
+    _waktuController.text = waktuMasak ?? "";
+    _kategoriDipilih = _kategoriList.firstWhere(
+      (k) => k.namaKategori == jenisMasakan,
+      orElse: () => KategoriResep(id: widget.resep.kategoriId, namaKategori: jenisMasakan ?? ""),
+    );    
   }
 
   Future<void> _loadKategori() async {
@@ -51,8 +90,8 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
     return Scaffold(
       backgroundColor: MyThemes.backgroundColor,
       appBar: MyAppBar(
-        title: 'Ayo Buat Resep',
-        subtitle: 'Makananmu!',
+        title: 'Ayo Edit Resep',
+        subtitle: 'Resep ${judulResep ?? ""}',
         backgroundColor: MyThemes.primaryColor,
         height: 140,
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
@@ -79,7 +118,7 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Judul Resep", style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 8),              
               MyTextfield(
                 hintText: "Contoh: Kari Ayam",
                 controller: _judulController,
@@ -152,14 +191,17 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
     );
   }
 
-  List<Widget> _buildDynamicFields(
-      List<TextEditingController> controllers, String label) {
+  List<Widget> _buildDynamicFields(List<TextEditingController> controllers, String label) {
+    // CEK APAKAH CONTROLLERS KOSONG
+    if(controllers.isEmpty){
+      controllers.add(TextEditingController(text: ""));
+    }
     return [
       for (int i = 0; i < controllers.length; i++)
         MyDynamicField(
           index: i,
           controller: controllers[i],
-          hintText: i == 0 ? "Contoh: Ayam 1kg" : null,
+          hintText: null,
         ),
       const SizedBox(height: 8),
       Center(
@@ -192,12 +234,17 @@ class _ScreenFormTambahResepState extends State<ScreenFormTambahResep> {
         waktuMasak: _waktuController.text,
         bahan: _bahanControllers.map((e) => e.text).toList(),
         langkah: _langkahControllers.map((e) => e.text).toList(),
+        imagePath: imagePath,
       );
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ScreenReviewResep(resep: resepDTO),
+          builder: (_) => ScreenReviewResep(
+            resep: resepDTO,
+            isEdit: true,            
+            resepId: resepId,
+          ),
         ),
       );
     }
